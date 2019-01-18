@@ -30,7 +30,7 @@ unsigned long delaytime=1000;
 byte x[8]= {B10000001,B01000010,B00100100,B00011000,B00011000,B00100100,B01000010,B10000001,};
 
 
-
+int alarm;
 
 
 void setup()
@@ -55,6 +55,7 @@ void setup()
   myRFID.AddicoreRFID_Init();
 
   Serial.begin(9600);
+
 }
 
 void drawFaces(){
@@ -86,7 +87,7 @@ void loop()
 
   distance = (duration/2) / 29.1;                                               // Distance is half the duration devided by 29.1 (from datasheet)
 
-    if (distance <= 25 && distance >= 0) {                                      // if distance less than 0.5 meter and more than 0 (0 or less means over range)
+    if (distance <= 25 && distance >= 0 || alarm == 1) {                                      // if distance less than 0.5 meter and more than 0 (0 or less means over range)
 
       Serial.println("Object Detected");
       digitalWrite(RED, HIGH);
@@ -94,11 +95,8 @@ void loop()
       drawFaces();
 
 
-
-
-}
-}
-      void test() {
+      alarm = 1;
+        Serial.println("hallo");
         LedControl lc=LedControl(A3,A4,A5,1);
 
         uchar i, tmp, checksum1;
@@ -134,9 +132,10 @@ void loop()
                 Serial.print(" , ");
               Serial.println(str[3]);
 
-
+}
           if(str[0] == 226 && str[1] == 76 && str[2] == 106 && str[3] == 27){ //Test if Tag Number = the card
 
+          alarm = 0;  
           Serial.println("RFID DETECTED");
           Serial.println("ALARM DEACTIVATED");
           digitalWrite(RED, LOW);
@@ -144,15 +143,8 @@ void loop()
             delay(3000);
           noTone(BUZZER);
           lc.clearDisplay(0);
-          return;
+
         }
-
-
-      }
-      myRFID.AddicoreRFID_Halt();
-    }
-
-
-  {                                                                           // Waiting 60 ms won't hurt any one
-    delay(1);
-  }
+        myRFID.AddicoreRFID_Halt();
+        delay(1);
+}}
